@@ -1,5 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
+import { MatSelectChange } from "@angular/material/select";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { TranslateService } from "@ngx-translate/core";
 import { ElectronService } from "app/services";
@@ -19,6 +20,9 @@ export class OptionsAppSectionComponent implements OnInit {
   public startWithSystem = false;
   public telemetryEnabled = false;
   public useHardwareAcceleration = true;
+
+  public allowedScales = [70, 75, 85, 90, 100, 110, 120, 130, 150, 200, 300];
+  public currentScale = 100;
 
   constructor(
     private _analyticsService: AnalyticsService,
@@ -48,6 +52,9 @@ export class OptionsAppSectionComponent implements OnInit {
     this.useHardwareAcceleration = this.wowupService.useHardwareAcceleration;
     this.startWithSystem = this.wowupService.startWithSystem;
     this.startMinimized = this.wowupService.startMinimized;
+
+    const currentWindow = window.require("electron").remote.getCurrentWindow();
+    this.currentScale = Math.round(currentWindow.webContents.zoomFactor * 100);
   }
 
   onEnableSystemNotifications = (evt: MatSlideToggleChange) => {
@@ -98,5 +105,10 @@ export class OptionsAppSectionComponent implements OnInit {
       this.wowupService.useHardwareAcceleration = evt.checked;
       this._electronService.restartApplication();
     });
+  };
+
+  onScaleChange = (evt: MatSelectChange) => {
+    const currentWindow = window.require("electron").remote.getCurrentWindow();
+    currentWindow.webContents.zoomFactor = evt.value / 100;
   };
 }
