@@ -21,7 +21,8 @@ export interface AddonProvider {
   searchByQuery(
     query: string,
     clientType: WowClientType,
-    channelType?: AddonChannelType
+    channelType?: AddonChannelType,
+    category?: string,
   ): Promise<AddonSearchResult[]>;
 
   searchByUrl(
@@ -50,6 +51,8 @@ export interface AddonProvider {
     addonChannelType: AddonChannelType,
     addonFolders: AddonFolder[]
   ): Promise<void>;
+
+  getCategories(): Promise<string[]>;
 }
 
 export type AddonProviderType =

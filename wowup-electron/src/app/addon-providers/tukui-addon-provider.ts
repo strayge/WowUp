@@ -19,6 +19,7 @@ import { AddonProvider } from "./addon-provider";
 const API_URL = "https://www.tukui.org/api.php";
 const CLIENT_API_URL = "https://www.tukui.org/client-api.php";
 const CACHE_TIME = 10 * 60 * 1000;
+const ADDONS_CATEGORY = "Unit Frames";
 
 export class TukUiAddonProvider implements AddonProvider {
   private readonly _circuitBreaker: CircuitBreaker<
@@ -73,8 +74,13 @@ export class TukUiAddonProvider implements AddonProvider {
 
   async searchByQuery(
     query: string,
-    clientType: WowClientType
+    clientType: WowClientType,
+    channelType?: AddonChannelType,
+    category?: string,
   ): Promise<AddonSearchResult[]> {
+    if (category && category !== ADDONS_CATEGORY) {
+      return [];
+    }
     const addons = await this.getAllAddons(clientType);
     const canonQuery = query.toLowerCase();
     let similarAddons = _.filter(
@@ -310,5 +316,9 @@ export class TukUiAddonProvider implements AddonProvider {
       default:
         return "";
     }
+  }
+
+  public async getCategories(): Promise<string[]> {
+    return [ADDONS_CATEGORY];
   }
 }
