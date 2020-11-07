@@ -110,42 +110,20 @@ export class ElectronService {
 
     this._windowMaximizedSrc.next(currentWindow?.isMaximized() || false);
 
-    currentWindow?.webContents
-      .setVisualZoomLevelLimits(1, 3)
-      .then(() => console.log("Zoom levels have been set between 100% and 300%"))
-      .catch((err) => console.error(err));
+    currentWindow?.webContents.setVisualZoomLevelLimits(1, 1);
 
     currentWindow.webContents.on("zoom-changed", (event, zoomDirection) => {
-      let currentZoom = currentWindow.webContents.getZoomFactor();
-      if (zoomDirection === "in") {
-        // setting the zoomFactor comes at a cost, this early return greatly improves performance
-        if (Math.round(currentZoom * 100) == 300) {
-          return;
-        }
-
-        if (currentZoom > 3.0) {
-          currentWindow.webContents.zoomFactor = 3.0;
-
-          return;
-        }
-
-        currentWindow.webContents.zoomFactor = currentZoom + 0.2;
-
-        return;
-      }
-      if (zoomDirection === "out") {
-        // setting the zoomFactor comes at a cost, this early return greatly improves performance
-        if (Math.round(currentZoom * 100) == 100) {
-          return;
-        }
-
-        if (currentZoom < 1.0) {
-          currentWindow.webContents.zoomFactor = 1.0;
-
-          return;
-        }
-
-        currentWindow.webContents.zoomFactor = currentZoom - 0.2;
+      let stepLogBase = 1.2;
+      let step = 0.5;
+      let scaleMin = 0.6;
+      let scaleMax = 3;
+      let scaleFactor = currentWindow.webContents.getZoomFactor();
+      let scaleBaseFactor = Math.log(scaleFactor) / Math.log(stepLogBase);
+      let scaleBaseFactorRounded = Math.round(scaleBaseFactor * 2) / 2;
+      let scaleBaseFactorNew = zoomDirection === "in" ? scaleBaseFactorRounded + step : scaleBaseFactorRounded - step;
+      let scaleFactorNew = Math.pow(stepLogBase, scaleBaseFactorNew);
+      if (scaleFactorNew >= scaleMin && scaleFactorNew <= scaleMax) {
+        currentWindow.webContents.zoomFactor = scaleFactorNew;
       }
     });
 

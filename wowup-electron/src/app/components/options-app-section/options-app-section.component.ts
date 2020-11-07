@@ -39,6 +39,11 @@ export class OptionsAppSectionComponent implements OnInit {
     { localeId: "zh", label: "简体中文" },
   ];
 
+  public allowedScales = [-2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6].map(
+    (x) => Math.pow(1.2, x)
+  );
+  public currentScale = 1;
+
   constructor(
     private _analyticsService: AnalyticsService,
     private _dialog: MatDialog,
@@ -66,6 +71,10 @@ export class OptionsAppSectionComponent implements OnInit {
     this.startWithSystem = this.wowupService.startWithSystem;
     this.startMinimized = this.wowupService.startMinimized;
     this.currentLanguage = this.wowupService.currentLanguage;
+
+    this.updateScale();
+    const currentWindow = window.require("electron").remote.getCurrentWindow();
+    currentWindow.webContents.on('zoom-changed', (event, arg) => {this.updateScale()});
   }
 
   onEnableSystemNotifications = (evt: MatSlideToggleChange) => {
@@ -133,5 +142,17 @@ export class OptionsAppSectionComponent implements OnInit {
       this.wowupService.currentLanguage = evt.value;
       this._electronService.restartApplication();
     });
+  };
+
+  onScaleChange = (evt: MatSelectChange) => {
+    let newScale = evt.value;
+    const currentWindow = window.require("electron").remote.getCurrentWindow();
+    currentWindow.webContents.zoomFactor = newScale;
+    this.currentScale = newScale;
+  };
+
+  updateScale() {
+    const currentWindow = window.require("electron").remote.getCurrentWindow();
+    this.currentScale = currentWindow.webContents.zoomFactor;
   };
 }

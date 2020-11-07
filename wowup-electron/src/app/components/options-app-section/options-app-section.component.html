@@ -110,4 +110,21 @@
       </mat-slide-toggle>
     </div>
   </div>
+  <!-- SCALE -->
+  <div class="row row align-items-center">
+    <div class="flex-grow-1">
+      <div> {{ "PAGES.OPTIONS.APPLICATION.SCALE_LABEL" | translate }} </div>
+      <small class="hint">{{ "PAGES.OPTIONS.APPLICATION.SCALE_DESCRIPTION" | translate }}</small>
+    </div>
+    <mat-form-field class="light-select">
+      <mat-select [(value)]="currentScale" (selectionChange)="onScaleChange($event)" appUserActionTracker
+        category="Options" [action]="scale" [label]="selectedScale"
+        placeholder="{{ currentScale  * 100 | number:'1.0-0'  }} %"
+      >
+        <mat-option *ngFor="let value of allowedScales" [value]="value">
+          {{ value * 100 | number:'1.0-0' }} %
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 </div>
