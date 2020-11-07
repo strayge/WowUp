@@ -1,6 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Toc } from "../../models/wowup/toc";
 import { FileService } from "../files/file.service";
+import { FileUtils } from "../../utils/file.utils";
 
 @Injectable({
   providedIn: "root",
@@ -10,6 +11,9 @@ export class TocService {
 
   public async parse(tocPath: string): Promise<Toc> {
     const tocText = await this._fileService.readFile(tocPath);
+    const tocFsStat = await FileUtils.getFileModificationTime(tocPath);
+    const modificationDate = tocFsStat.mtime;
+    const creationDate = tocFsStat.ctime;
 
     return {
       author: this.getValue("Author", tocText),
@@ -25,6 +29,8 @@ export class TocService {
       dependencies: this.getValue("Dependencies", tocText),
       tukUiProjectId: this.getValue("X-Tukui-ProjectID", tocText),
       tukUiProjectFolders: this.getValue("X-Tukui-ProjectFolders", tocText),
+      modificationDate: modificationDate,
+      creationDate: creationDate,
     };
   }
 
