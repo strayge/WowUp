@@ -71,7 +71,9 @@ export class WowInterfaceAddonProvider implements AddonProvider {
 
   async searchByQuery(
     query: string,
-    clientType: WowClientType
+    clientType: WowClientType,
+    channelType?: AddonChannelType,
+    category?: string,
   ): Promise<AddonSearchResult[]> {
     return [];
   }
@@ -241,5 +243,9 @@ export class WowInterfaceAddonProvider implements AddonProvider {
       console.error("Failed to create addon search result", err);
       return undefined;
     }
+  }
+
+  public async getCategories(): Promise<string[]> {
+    return [];
   }
 }

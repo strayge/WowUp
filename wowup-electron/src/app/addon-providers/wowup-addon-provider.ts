@@ -49,7 +49,9 @@ export class WowUpAddonProvider implements AddonProvider {
 
   async searchByQuery(
     query: string,
-    clientType: WowClientType
+    clientType: WowClientType,
+    channelType?: AddonChannelType,
+    category?: string,
   ): Promise<AddonSearchResult[]> {
     // TODO
     return [];
@@ -254,5 +256,9 @@ export class WowUpAddonProvider implements AddonProvider {
       customFundingLink: scanResult.exactMatch.custom_funding_link,
       githubFundingLink: scanResult.exactMatch.github_funding_link,
     };
+  }
+
+  public async getCategories(): Promise<string[]> {
+    return [];
   }
 }

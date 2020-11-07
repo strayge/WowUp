@@ -82,6 +82,8 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
   public isBusy = true;
   public selectedClient = WowClientType.None;
   public contextMenuPosition = { x: "0px", y: "0px" };
+  public selectedCategory = '';
+  public categories;
 
   constructor(
     private _addonService: AddonService,
@@ -121,6 +123,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
         col.visible = state.visible;
       }
     });
+    this._addonService.getCategories().then(result => this.categories = ["All"].concat(result));
   }
 
   ngOnDestroy() {
@@ -241,7 +244,7 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
   }
 
   async onSearch() {
-    if (!this.query) {
+    if (!this.query && (!this.selectedCategory || this.selectedCategory == 'All')) {
       await this.loadPopularAddons(this.selectedClient);
       return;
     }
@@ -250,7 +253,8 @@ export class GetAddonsComponent implements OnInit, OnDestroy {
 
     let searchResults = await this._addonService.search(
       this.query,
-      this.selectedClient
+      this.selectedClient,
+      this.selectedCategory,
     );
 
     this.setDataSource(this.formatAddons(searchResults));
